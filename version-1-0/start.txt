@@ -1,0 +1,113 @@
+============================================================
+  CombiTab – Setup & Start Guide
+============================================================
+
+  Prerequisites:
+  - Python 3.9 or higher installed
+  - combitab.py in your working directory
+
+
+------------------------------------------------------------
+  LINUX / macOS
+------------------------------------------------------------
+
+# 1. Create virtual environment
+python3 -m venv .venv
+
+# 2. Activate virtual environment
+source .venv/bin/activate
+
+# 3. Upgrade pip and install required packages
+pip install --upgrade pip
+pip install streamlit pandas plotly numpy matplotlib openpyxl scipy scikit-learn
+
+# 4. Start CombiTab
+streamlit run combitab.py
+
+# 5. Stop the application
+#    Press Ctrl+C in the terminal
+
+# 6. Deactivate virtual environment (when finished)
+deactivate
+
+
+------------------------------------------------------------
+  WINDOWS (Command Prompt / cmd)
+------------------------------------------------------------
+
+# 1. Create virtual environment
+python -m venv .venv
+
+# 2. Activate virtual environment
+.venv\Scripts\activate
+
+# 3. Upgrade pip and install required packages
+pip install --upgrade pip
+pip install streamlit pandas plotly numpy matplotlib openpyxl scipy scikit-learn
+
+# 4. Start CombiTab
+streamlit run combitab.py
+
+# 5. Stop the application
+#    Press Ctrl+C in the terminal
+
+# 6. Deactivate virtual environment (when finished)
+deactivate
+
+
+------------------------------------------------------------
+  WINDOWS (PowerShell)
+------------------------------------------------------------
+
+# 1. Create virtual environment
+python -m venv .venv
+
+# 2. Activate virtual environment
+.venv\Scripts\Activate.ps1
+
+#    Note: If you get an execution policy error, run this first:
+#    Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+# 3. Upgrade pip and install required packages
+pip install --upgrade pip
+pip install streamlit pandas plotly numpy matplotlib openpyxl scipy scikit-learn
+
+# 4. Start CombiTab
+streamlit run combitab.py
+
+# 5. Stop the application
+#    Press Ctrl+C in the terminal
+
+# 6. Deactivate virtual environment (when finished)
+deactivate
+
+
+------------------------------------------------------------
+  SUBSEQUENT STARTS (environment already created)
+------------------------------------------------------------
+
+# Linux/macOS:
+source .venv/bin/activate
+streamlit run combitab.py
+
+# Windows (cmd):
+.venv\Scripts\activate
+streamlit run combitab.py
+
+# Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+streamlit run combitab.py
+
+
+------------------------------------------------------------
+  NOTES
+------------------------------------------------------------
+
+- The app opens automatically in your default browser
+  (usually at http://localhost:8501).
+- If it does not open automatically, copy the URL shown
+  in the terminal into your browser.
+- For best results, use Firefox (recommended for full
+  download functionality).
+
+============================================================
