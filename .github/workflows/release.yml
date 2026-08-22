@@ -96,9 +96,167 @@ jobs:
             release/*.exe
             release/*.dmg
 
+
+  # ---------------------------------------------------------------- Pakettest
+  #
+  # Bis hierher ist nur belegt, dass sich die Pakete BAUEN lassen. Diese Jobs
+  # installieren sie und starten die installierte Anwendung — jeweils auf dem
+  # System, für das sie gedacht ist. Der Selbsttest läuft dann nicht mehr gegen
+  # den Quelltext, sondern gegen das, was beim Nutzer ankommt: das asar-Archiv,
+  # die mitgepackten Schriften, das app://-Schema, die Modul-Worker.
+  #
+  # Ohne GPU liefert Chromium keinen WebGL2-Kontext; SwiftShader rechnet ihn in
+  # Software nach, seit Chromium 131 nur mit `--enable-unsafe-swiftshader`.
+  #
+  # Was diese Jobs NICHT leisten: Sie bekommen weder SmartScreen noch Gatekeeper
+  # zu sehen. Beide Warnungen erscheinen erst, wenn ein Mensch die Datei aus dem
+  # Netz lädt — das bleibt von Hand zu prüfen.
+
+  test-appimage:
+    name: Test — AppImage
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pakete-ubuntu-latest
+          path: pakete
+
+      # Zum Einhängen bräuchte das AppImage FUSE, das auf dem Runner fehlt.
+      # `--appimage-extract` packt es stattdessen aus; gestartet wird über
+      # AppRun dieselbe Programmdatei, die auch beim Einhängen liefe.
+      - name: Auspacken und starten
+        run: |
+          set -euo pipefail
+          APP=$(ls pakete/*.AppImage)
+          chmod +x "$APP"
+          "$APP" --appimage-extract > /dev/null
+          sudo chown root:root squashfs-root/chrome-sandbox
+          sudo chmod 4755 squashfs-root/chrome-sandbox
+          xvfb-run -a env COMBITAB_SMOKE=1 ./squashfs-root/AppRun \
+            --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader
+
+  test-deb:
+    name: Test — deb (Ubuntu)
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pakete-ubuntu-latest
+          path: pakete
+
+      # Aufgerufen wird bewusst `combitab` ohne Pfad: Damit ist zugleich belegt,
+      # dass das postinst-Skript den Verweis in /usr/bin angelegt hat.
+      - name: Installieren und starten
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ./pakete/combitab_*_amd64.deb
+          xvfb-run -a env COMBITAB_SMOKE=1 combitab \
+            --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader
+
+  test-rpm:
+    name: Test — rpm (Fedora)
+    needs: build
+    runs-on: ubuntu-latest
+    # Ubuntu kann kein rpm installieren. Der Fedora-Container liefert das
+    # System, für das das Paket gedacht ist — bisher war das rpm auf keinem
+    # einzigen laufenden System je gestartet worden.
+    container: fedora:latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pakete-ubuntu-latest
+          path: pakete
+
+      - name: Installieren und starten
+        run: |
+          set -euo pipefail
+          # --nogpgcheck: Das Paket ist nicht signiert, das ist bekannt und gewollt.
+          dnf install -y --nogpgcheck ./pakete/combitab-*.x86_64.rpm xorg-x11-server-Xvfb
+          test -x /opt/CombiTab/combitab
+
+          # Im Container ist root der Normalfall, aber Chromium verweigert als
+          # root den Start mit Sandbox. Also ein gewöhnlicher Benutzer, wie ihn
+          # auch ein Mensch hätte.
+          useradd -m tester
+          chown root:root /opt/CombiTab/chrome-sandbox
+          chmod 4755 /opt/CombiTab/chrome-sandbox
+          runuser -u tester -- env HOME=/home/tester COMBITAB_SMOKE=1 \
+            xvfb-run -a /opt/CombiTab/combitab \
+            --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader
+
+  test-win:
+    name: Test — Windows (Installer und portabel)
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pakete-windows-latest
+          path: pakete
+
+      # Die installierte .exe hängt am GUI-Subsystem und schreibt nicht in die
+      # Konsole des Aufrufers. Ohne COMBITAB_SMOKE_REPORT bliebe hier nur der
+      # Exit-Code, und im Fehlerfall wüsste niemand, welche Prüfung fiel.
+      - name: Installer still ausführen und starten
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $setup = (Get-ChildItem pakete\*Setup*.exe)[0].FullName
+          # /S ist der stille Modus des NSIS-Installers. perMachine ist false,
+          # die Anwendung landet deshalb im Benutzerprofil.
+          Start-Process -FilePath $setup -ArgumentList "/S" -Wait
+          $exe = "$env:LOCALAPPDATA\Programs\CombiTab\CombiTab.exe"
+          if (-not (Test-Path $exe)) { throw "Nach der Installation nicht gefunden: $exe" }
+
+          $env:COMBITAB_SMOKE = "1"
+          $env:COMBITAB_SMOKE_REPORT = "$PWD\bericht-installer.txt"
+          $p = Start-Process -FilePath $exe -Wait -PassThru -ArgumentList `
+            "--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"
+          if (Test-Path $env:COMBITAB_SMOKE_REPORT) { Get-Content $env:COMBITAB_SMOKE_REPORT }
+          if ($p.ExitCode -ne 0) { throw "Selbsttest fehlgeschlagen (Exit-Code $($p.ExitCode))" }
+
+      # Die portable Fassung ist eine eigene Auslieferungsdatei und verdient
+      # eine eigene Prüfung: Sie entpackt sich beim Start selbst.
+      - name: Portable Fassung starten
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $portable = (Get-ChildItem pakete\*portable*.exe)[0].FullName
+          $env:COMBITAB_SMOKE = "1"
+          $env:COMBITAB_SMOKE_REPORT = "$PWD\bericht-portabel.txt"
+          $p = Start-Process -FilePath $portable -Wait -PassThru -ArgumentList `
+            "--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"
+          if (Test-Path $env:COMBITAB_SMOKE_REPORT) { Get-Content $env:COMBITAB_SMOKE_REPORT }
+          if ($p.ExitCode -ne 0) { throw "Selbsttest fehlgeschlagen (Exit-Code $($p.ExitCode))" }
+
+  test-mac:
+    name: Test — macOS-dmg (Apple Silicon)
+    needs: build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: pakete-macos-latest
+          path: pakete
+
+      # Genau der Weg, den die Installationsanleitung beschreibt: dmg öffnen,
+      # App nach /Applications ziehen, starten.
+      - name: dmg einhängen, App kopieren und starten
+        run: |
+          set -euo pipefail
+          DMG=$(ls pakete/*.dmg)
+          hdiutil attach "$DMG" -nobrowse -readonly -mountpoint /Volumes/CombiTabTest
+          cp -R "/Volumes/CombiTabTest/CombiTab.app" /Applications/
+          hdiutil detach /Volumes/CombiTabTest
+          COMBITAB_SMOKE=1 /Applications/CombiTab.app/Contents/MacOS/CombiTab \
+            --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader
+
   release:
     name: Release-Entwurf anlegen
-    needs: build
+    needs: [build, test-appimage, test-deb, test-rpm, test-win, test-mac]
     runs-on: ubuntu-latest
     steps:
       - name: Alle Pakete herunterladen

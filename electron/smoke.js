@@ -8,8 +8,14 @@
  *
  * Aufruf:  npm run smoke
  * Beendet sich mit Code 0 (alles bestanden) oder 1 (mindestens ein Fehlschlag).
+ *
+ * Ist COMBITAB_SMOKE_REPORT gesetzt, wandert der Bericht zusätzlich als
+ * schmuckloser Text in diese Datei. Nötig beim Prüfen der fertigen Pakete:
+ * Unter Windows hängt die installierte .exe am GUI-Subsystem und schreibt
+ * nicht in die Konsole des Aufrufers — ohne Datei bliebe dort nur der
+ * Exit-Code, und man wüsste nicht, welche Prüfung gescheitert ist.
  */
-import { readdir } from "node:fs/promises";
+import { readdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const GREEN = "\x1b[32m", RED = "\x1b[31m", OFF = "\x1b[0m";
@@ -112,6 +118,21 @@ async function rendererProbe(scoreWorkerPath) {
   return checks;
 }
 
+/**
+ * Schreibt den Bericht nach COMBITAB_SMOKE_REPORT, falls gesetzt. Ein
+ * Fehlschlag beim Schreiben darf den Selbsttest nicht verfälschen — das
+ * Urteil steht da bereits fest und geht über den Exit-Code hinaus.
+ */
+async function writeReport(text) {
+  const target = process.env.COMBITAB_SMOKE_REPORT;
+  if (!target) return;
+  try {
+    await writeFile(target, text, "utf8");
+  } catch (e) {
+    console.error("Bericht konnte nicht geschrieben werden:", e?.message ?? e);
+  }
+}
+
 /** Führt den Selbsttest im gegebenen Fenster aus und beendet den Prozess. */
 export async function runSmoke(app, win, webRoot) {
   let code = 1;
@@ -123,20 +144,24 @@ export async function runSmoke(app, win, webRoot) {
     );
 
     let failed = 0;
+    const plain = ["Selbsttest der Desktop-Fassung", ""];
     console.log("\nSelbsttest der Desktop-Fassung\n");
     for (const c of checks) {
       if (!c.ok) failed++;
       const mark = c.ok ? `${GREEN}OK  ${OFF}` : `${RED}FEHL${OFF}`;
       console.log(`  ${mark} ${c.name}${c.detail ? ` — ${c.detail}` : ""}`);
+      plain.push(`  ${c.ok ? "OK  " : "FEHL"} ${c.name}${c.detail ? ` — ${c.detail}` : ""}`);
     }
-    console.log(
-      failed === 0
-        ? `\n${GREEN}Alle ${checks.length} Prüfungen bestanden.${OFF}\n`
-        : `\n${RED}${failed} von ${checks.length} Prüfungen fehlgeschlagen.${OFF}\n`,
-    );
+    const fazit = failed === 0
+      ? `Alle ${checks.length} Prüfungen bestanden.`
+      : `${failed} von ${checks.length} Prüfungen fehlgeschlagen.`;
+    console.log(failed === 0 ? `\n${GREEN}${fazit}${OFF}\n` : `\n${RED}${fazit}${OFF}\n`);
+    plain.push("", fazit);
+    await writeReport(plain.join("\n") + "\n");
     code = failed === 0 ? 0 : 1;
   } catch (e) {
     console.error("Selbsttest abgebrochen:", e?.message ?? e);
+    await writeReport(`Selbsttest abgebrochen: ${e?.message ?? e}\n`);
   }
   app.exit(code);
 }
