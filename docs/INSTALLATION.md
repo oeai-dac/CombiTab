@@ -24,7 +24,7 @@ Abschnitt „Assets" der neuesten Version.
 | **macOS** mit Apple-Chip (M1–M4) | `CombiTab-2.0.0-arm64.dmg` |
 | **macOS** mit Intel-Prozessor | `CombiTab-2.0.0-x64.dmg` |
 | **Linux**, beliebige Distribution | `CombiTab-2.0.0-x86_64.AppImage` |
-| Linux: Debian, Ubuntu, Linux Mint | `combitab_2.0.0_amd64.deb` |
+| Linux: Ubuntu 22.04+, Debian 12+, Mint | `combitab_2.0.0_amd64.deb` |
 | Linux: Fedora, openSUSE, RHEL | `combitab-2.0.0.x86_64.rpm` |
 
 **Welchen Mac habe ich?** Apfel-Menü → „Über diesen Mac". Steht dort „Apple M1",
@@ -138,7 +138,7 @@ Möchten Sie CombiTab im Anwendungsmenü sehen, hilft das Werkzeug
 [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher); es richtet
 den Menüeintrag beim ersten Start selbsttätig ein.
 
-### Debian, Ubuntu, Linux Mint
+### Ubuntu 22.04+, Debian 12+, Linux Mint
 
 ```bash
 sudo apt install ./combitab_2.0.0_amd64.deb

@@ -93,23 +93,23 @@
           ]
         }
       ],
-      "category": "Science",
+      "category": "Science;Education",
       "synopsis": "Archäologische Seriation und Kombinationstabellen",
-      "description": "CombiTab erstellt Kombinationstabellen, führt Seriationen und Korrespondenzanalysen durch und exportiert die Ergebnisse als Grafik, Tabelle oder Linked Open Data. Alle Daten bleiben lokal.",
+      "description": "Kombinationstabellen, Seriation und Korrespondenzanalyse für die archäologische Auswertung. Alle Daten bleiben auf dem eigenen Rechner.",
       "desktop": {
         "entry": {
-          "Name": "CombiTab",
-          "Comment": "Archäologische Seriation und Kombinationstabellen",
-          "Categories": "Science;Education;Archaeology;",
-          "Keywords": "Archäologie;Seriation;Kombinationstabelle;Korrespondenzanalyse;"
+          "Keywords": "Archäologie;Seriation;Kombinationstabelle;Korrespondenzanalyse;Archaeology;",
+          "GenericName": "Kombinationstabellen"
         }
       },
       "maintainer": "Christian Gugl <ch.gugl@gmail.com>",
-      "syncDesktopName": true
+      "syncDesktopName": true,
+      "icon": "build/icons"
     },
     "deb": {
       "priority": "optional",
-      "compression": "xz"
+      "compression": "xz",
+      "packageCategory": "science"
     },
     "rpm": {
       "compression": "xz"

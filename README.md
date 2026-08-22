@@ -25,7 +25,7 @@ MIT-Lizenz · © Christian Gugl / Österreichisches Archäologisches Institut (�
 | macOS (Apple M1–M4) | `CombiTab-*-arm64.dmg` |
 | macOS (Intel) | `CombiTab-*-x64.dmg` |
 | Linux, universell | `CombiTab-*-x86_64.AppImage` |
-| Debian, Ubuntu, Mint | `combitab_*_amd64.deb` |
+| Ubuntu 22.04+, Debian 12+, Mint | `combitab_*_amd64.deb` |
 | Fedora, openSUSE, RHEL | `combitab-*.x86_64.rpm` |
 
 Die Pakete sind nicht digital signiert; Windows und macOS zeigen deshalb beim

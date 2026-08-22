@@ -78,6 +78,17 @@ writeFileSync(join(OUT, "icon-maskable-512.png"), drawIcon(512, { maskable: true
 mkdirSync(BUILD_OUT, { recursive: true });
 writeFileSync(join(BUILD_OUT, "icon.png"), drawIcon(1024));
 
+// Icon-Satz für Linux. electron-builder legt jede Größe unter
+// /usr/share/icons/hicolor/<größe>/apps/ ab. Ein einzelnes 1024er-Icon reicht
+// nicht: Panels und Anwendungsmenüs suchen die gängigen Stufen und zeigen sonst
+// ein Platzhaltersymbol.
+const LINUX_SIZES = [16, 24, 32, 48, 64, 128, 256, 512];
+const ICONS_OUT = join(BUILD_OUT, "icons");
+mkdirSync(ICONS_OUT, { recursive: true });
+for (const size of LINUX_SIZES) {
+  writeFileSync(join(ICONS_OUT, `${size}x${size}.png`), drawIcon(size));
+}
+
 // Vektor-Favicon (scharf in jeder Größe)
 const rgbHex = (c) => "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("");
 const cells = GRID.flatMap((row, gy) => row.map((c, gx) => `<rect x="${1 + gx * 13}" y="${1 + gy * 13}" width="11" height="11" rx="2" fill="${rgbHex(c)}"/>`)).join("");
@@ -85,3 +96,4 @@ writeFileSync(join(OUT, "favicon.svg"), `<svg xmlns="http://www.w3.org/2000/svg"
 
 console.log("PWA-Icons in public/: icon-192.png, icon-512.png, icon-maskable-512.png, favicon.svg");
 console.log("Paket-Icon in build/: icon.png (1024×1024)");
+console.log(`Linux-Icon-Satz in build/icons/: ${LINUX_SIZES.map((s) => `${s}px`).join(", ")}`);

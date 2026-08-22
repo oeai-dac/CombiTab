@@ -56,21 +56,40 @@ npm run dist:mac      # dmg für Intel und Apple Silicon
 
 Die Ergebnisse liegen in `release/`.
 
+Das deb ist gegen **Ubuntu 22.04 und neuer** gerichtet und dort lauffähig:
+
+- Die Electron-Binärdateien verlangen höchstens **GLIBC 2.25** und keine
+  `GLIBCXX`-Symbole (libstdc++ ist statisch gebunden). Ubuntu 22.04 liefert
+  glibc 2.35.
+- Alle Abhängigkeiten des Pakets sind unter 22.04, 24.04 und 25.04 auflösbar —
+  teils über die `t64`-Nachfolgepakete, die den alten Namen weiterhin
+  bereitstellen.
+- Das `postinst` unterscheidet die Fälle selbst: `chrome-sandbox` erhält das
+  setuid-Bit nur auf Systemen ohne User-Namespaces, und das mitgelieferte
+  AppArmor-Profil wird nur dort eingespielt, wo AppArmor `abi/4.0` versteht
+  (Ubuntu 24.04 und neuer). Ohne dieses Profil starten Electron-Anwendungen
+  unter Ubuntu 24.04 nicht, weil dort unprivilegierte User-Namespaces
+  eingeschränkt sind.
+
 Ein Betriebssystem kann jeweils nur seine eigenen Pakete zuverlässig bauen.
 Deshalb erledigt das die CI auf drei Runnern gleichzeitig; lokal ist der Bau
 vor allem zum Prüfen gedacht.
 
-### Bekannte Hürde unter Arch Linux
+### Werkzeuge für deb und rpm
 
-`deb` und `rpm` entstehen über `fpm`, dessen mitgeliefertes Ruby `libcrypt.so.1`
-benötigt. Arch und Derivate liefern nur `libcrypt.so.2`. Abhilfe:
+Beide entstehen über `fpm`. Vorausgesetzt werden:
 
-```bash
-sudo pacman -S libxcrypt-compat
-```
+| Ziel | Bedarf | Debian/Ubuntu | Arch |
+|---|---|---|---|
+| `deb` | `libcrypt.so.1` für das Ruby von `fpm` | vorhanden | `sudo pacman -S libxcrypt-compat` |
+| `rpm` | `rpmbuild` | `sudo apt install rpm` | `sudo pacman -S rpm-tools` |
 
-Das AppImage ist davon nicht betroffen. Auf dem Ubuntu-Runner der CI stellt sich
-die Frage nicht.
+Das AppImage braucht keines von beidem.
+
+Auf Arch fehlt `libcrypt.so.1`, weil dort nur `libcrypt.so.2` ausgeliefert wird;
+die Symbolversionen sind nicht austauschbar, ein Symlink hilft also nicht. Auf
+dem Ubuntu-Runner der CI stellt sich nur die `rpmbuild`-Frage — dafür enthält
+`.github/workflows/release.yml` einen eigenen Installationsschritt.
 
 ## Zur Code-Signierung
 

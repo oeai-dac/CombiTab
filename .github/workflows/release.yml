@@ -51,6 +51,13 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Das rpm-Ziel ruft `rpmbuild` auf, das auf dem Ubuntu-Runner nicht
+      # vorinstalliert ist. Ohne diesen Schritt bricht der Linux-Bau ab,
+      # nachdem AppImage und deb bereits fertig sind.
+      - name: rpmbuild bereitstellen (nur Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+
       - name: Abhängigkeiten installieren
         run: npm ci
 
