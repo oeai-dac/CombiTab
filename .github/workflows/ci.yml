@@ -50,5 +50,13 @@ jobs:
 
       # Der Selbsttest startet ein echtes Electron-Fenster. Auf dem Runner gibt
       # es keinen Bildschirm, deshalb über einen virtuellen X-Server.
+      #
+      # Ohne GPU liefert Chromium keinen WebGL2-Kontext, und der Selbsttest
+      # meldete zu Recht dessen Fehlen. Die App wiche dann auf ihren
+      # Canvas-2D-Pfad aus — aber gerade der WebGL2-Renderer soll ja geprüft
+      # werden. SwiftShader rechnet ihn in Software nach; seit Chromium 131
+      # braucht das ausdrücklich `--enable-unsafe-swiftshader`.
       - name: Selbsttest der Desktop-Fassung
-        run: xvfb-run -a npm run smoke
+        run: >
+          xvfb-run -a npm run smoke --
+          --use-gl=angle --use-angle=swiftshader --enable-unsafe-swiftshader
