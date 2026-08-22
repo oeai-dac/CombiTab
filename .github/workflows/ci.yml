@@ -28,6 +28,17 @@ jobs:
       - name: Abhängigkeiten installieren
         run: npm ci
 
+      # Electron startet unter Linux über einen SUID-Sandbox-Helfer, der root
+      # gehören und das setuid-Bit tragen muss. Beim Auspacken durch npm bleibt
+      # er beim Runner-Benutzer, und der Selbsttest bricht mit SIGTRAP ab.
+      # Die Rechte nachzuziehen ist dem Abschalten per `--no-sandbox`
+      # vorzuziehen: sonst prüfte der Selbsttest eine Konfiguration, die es
+      # bei den Nutzern gar nicht gibt.
+      - name: Electron-Sandbox scharfschalten
+        run: |
+          sudo chown root:root node_modules/electron/dist/chrome-sandbox
+          sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
+
       - name: Typprüfung und Produktions-Build
         run: npm run build
 

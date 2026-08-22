@@ -48,7 +48,13 @@ jobs:
       - name: Produktions-Build
         run: npm run build
 
+      # `enablement: true` schaltet Pages beim ersten Lauf selbst auf die
+      # Quelle „GitHub Actions". Ohne das scheitert der Schritt mit
+      # „Get Pages site failed", solange niemand es von Hand in den
+      # Repo-Einstellungen gesetzt hat.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
