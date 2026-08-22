@@ -1,0 +1,121 @@
+# Erzeugt die Installationspakete für alle Plattformen und hängt sie an einen
+# Entwurf eines GitHub-Release.
+#
+# Auslösen durch einen Versions-Tag:
+#     npm version 2.0.1        # setzt package.json und legt den Tag an
+#     git push --follow-tags
+#
+# Das Release wird als ENTWURF angelegt: So lassen sich die Dateien vorher
+# herunterladen und prüfen, und der Begleittext kann in Ruhe geschrieben werden.
+# Erst das Veröffentlichen macht es für Nutzer sichtbar.
+#
+# Es wird bewusst NICHT signiert (weder Apple noch Windows) — siehe
+# docs/INSTALLATION.md, das die Sicherheitsmeldungen erklärt. Sobald
+# Zertifikate vorliegen, genügt es, hier die entsprechenden Secrets zu setzen;
+# electron-builder greift sie selbsttätig auf.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            label: Linux (AppImage, deb, rpm)
+            command: npm run dist:linux
+          - os: windows-latest
+            label: Windows (Installer, portabel)
+            command: npm run dist:win
+          # Ein macOS-Runner baut beide Architekturen: electron-builder lädt die
+          # passenden Electron-Binärdateien selbst herunter.
+          - os: macos-latest
+            label: macOS (Intel und Apple Silicon)
+            command: npm run dist:mac
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Testsuite
+        run: npm test
+
+      - name: Installationspakete bauen
+        run: ${{ matrix.command }}
+        env:
+          # Ohne Zertifikat gar nicht erst versuchen zu signieren.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      # Nur die auslieferbaren Dateien einsammeln — nicht das entpackte
+      # Verzeichnis, das electron-builder daneben stehen lässt.
+      - name: Pakete als Artefakt sichern
+        uses: actions/upload-artifact@v4
+        with:
+          name: pakete-${{ matrix.os }}
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            release/*.AppImage
+            release/*.deb
+            release/*.rpm
+            release/*.exe
+            release/*.dmg
+            release/*.blockmap
+
+  release:
+    name: Release-Entwurf anlegen
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Alle Pakete herunterladen
+        uses: actions/download-artifact@v4
+        with:
+          path: pakete
+          merge-multiple: true
+
+      - name: Übersicht
+        run: ls -lh pakete
+
+      - name: Entwurf mit angehängten Dateien
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: true
+          files: pakete/*
+          body: |
+            ## Installation
+
+            Eine ausführliche, bebilderte Anleitung steht in
+            [docs/INSTALLATION.md](https://github.com/oeai-dac/CombiTab/blob/main/docs/INSTALLATION.md).
+
+            | System | Datei |
+            |---|---|
+            | Windows | `CombiTab-*-Setup-x64.exe` (Installer) oder `CombiTab-*-portable-x64.exe` (ohne Installation) |
+            | macOS (Apple Silicon) | `CombiTab-*-arm64.dmg` |
+            | macOS (Intel) | `CombiTab-*-x64.dmg` |
+            | Linux (universell) | `CombiTab-*-x86_64.AppImage` |
+            | Debian, Ubuntu, Mint | `combitab_*_amd64.deb` |
+            | Fedora, openSUSE, RHEL | `combitab-*.x86_64.rpm` |
+
+            **Ohne Installation ausprobieren:** <https://oeai-dac.github.io/CombiTab/>
+
+            > Die Pakete sind nicht digital signiert. Windows und macOS zeigen
+            > deshalb beim ersten Start eine Warnung. Die Installationsanleitung
+            > erklärt Schritt für Schritt, wie Sie sie bestätigen.

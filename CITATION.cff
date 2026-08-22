@@ -1,0 +1,29 @@
+# Zitierhinweis im Citation File Format. GitHub zeigt daraus rechts auf der
+# Repository-Seite einen "Cite this repository"-Knopf an.
+cff-version: 1.2.0
+title: "CombiTab"
+message: "Wenn Sie diese Software in einer Publikation verwenden, zitieren Sie sie bitte wie folgt."
+type: software
+authors:
+  - family-names: "Gugl"
+    given-names: "Christian"
+    affiliation: "Österreichisches Archäologisches Institut, Österreichische Akademie der Wissenschaften"
+repository-code: "https://github.com/oeai-dac/CombiTab"
+url: "https://oeai-dac.github.io/CombiTab/"
+abstract: >-
+  CombiTab erstellt archäologische Kombinationstabellen, führt Seriationen und
+  Korrespondenzanalysen durch, prüft deren Robustheit per Bootstrap und
+  exportiert die Ergebnisse als Grafik, Tabelle, Methodenbericht oder Linked
+  Open Data nach CIDOC-CRM/CRMarchaeo. Die Anwendung rechnet vollständig auf
+  dem Rechner der Nutzerin oder des Nutzers; Daten werden nicht übertragen.
+keywords:
+  - archaeology
+  - seriation
+  - correspondence analysis
+  - combination table
+  - Kombinationstabelle
+  - CIDOC-CRM
+  - digital humanities
+license: MIT
+version: "2.0.0"
+date-released: "2026-08-22"

@@ -1,0 +1,170 @@
+{
+  "name": "combitab",
+  "version": "2.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "node scripts/ensure-electron.mjs",
+    "ensure-electron": "node scripts/ensure-electron.mjs",
+    "dev": "vite",
+    "build": "tsc -p tsconfig.json && vite build",
+    "preview": "vite preview",
+    "test": "tsx src/matrix/orderModel.test.ts && tsx src/matrix/cellColor.test.ts && tsx src/bench/synth.test.ts && tsx src/i18n/i18n.test.ts && tsx src/pwa.test.ts && tsx src/seriation/metrics.test.ts && tsx src/seriation/strategies.test.ts && tsx src/workers/score.test.ts && tsx src/core/filter.test.ts && tsx src/core/missing.test.ts && tsx src/core/shareLink.test.ts && tsx src/core/theme.test.ts && tsx src/core/palette.test.ts && tsx src/core/materialGroups.test.ts && tsx src/analysis/ca.test.ts && tsx src/analysis/missing.kernels.test.ts && tsx src/analysis/bootstrap.test.ts && tsx src/analysis/methods.test.ts && tsx src/export/export.test.ts && tsx src/export/layout.test.ts && tsx src/export/crossbrowser.test.ts && tsx src/export/exportRDF.test.ts && tsx src/validation/ca.validate.test.ts && tsx src/annotations/annotations.test.ts",
+    "bench": "tsx src/bench/perf.bench.ts",
+    "gen-icons": "node scripts/gen-icons.mjs",
+    "validate": "tsx src/validation/ca.validate.test.ts",
+    "vendor-fonts": "node scripts/vendor-fonts.mjs",
+    "electron": "npm run build && electron .",
+    "electron:dev": "electron .",
+    "dist": "npm run build && electron-builder",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:dir": "npm run build && electron-builder --dir",
+    "smoke": "npm run build && COMBITAB_SMOKE=1 electron ."
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^18.3",
+    "@types/react-dom": "^18.3",
+    "@vitejs/plugin-react": "^4.3",
+    "electron": "^43.4.1",
+    "electron-builder": "^26.15.3",
+    "tsx": "^4.23.1",
+    "typescript": "^5",
+    "vite": "^5.4"
+  },
+  "allowScripts": {
+    "electron@43.4.1": true
+  },
+  "productName": "CombiTab",
+  "description": "Kombinationstabellen, Seriation und Korrespondenzanalyse für die archäologische Auswertung.",
+  "author": {
+    "name": "Christian Gugl",
+    "email": "ch.gugl@gmail.com",
+    "url": "https://github.com/oeai-dac"
+  },
+  "homepage": "https://github.com/oeai-dac/CombiTab",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oeai-dac/CombiTab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oeai-dac/CombiTab/issues"
+  },
+  "main": "electron/main.js",
+  "build": {
+    "appId": "at.ac.oeaw.oeai.combitab",
+    "productName": "CombiTab",
+    "copyright": "Copyright © 2026 Christian Gugl / Österreichisches Archäologisches Institut (ÖAW)",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Science",
+      "synopsis": "Archäologische Seriation und Kombinationstabellen",
+      "description": "CombiTab erstellt Kombinationstabellen, führt Seriationen und Korrespondenzanalysen durch und exportiert die Ergebnisse als Grafik, Tabelle oder Linked Open Data. Alle Daten bleiben lokal.",
+      "desktop": {
+        "entry": {
+          "Name": "CombiTab",
+          "Comment": "Archäologische Seriation und Kombinationstabellen",
+          "Categories": "Science;Education;Archaeology;",
+          "Keywords": "Archäologie;Seriation;Kombinationstabelle;Korrespondenzanalyse;"
+        }
+      },
+      "maintainer": "Christian Gugl <ch.gugl@gmail.com>",
+      "syncDesktopName": true
+    },
+    "deb": {
+      "priority": "optional",
+      "compression": "xz"
+    },
+    "rpm": {
+      "compression": "xz"
+    },
+    "appImage": {
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CombiTab",
+      "artifactName": "${productName}-${version}-Setup-${arch}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable-${arch}.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.education",
+      "darkModeSupport": true,
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    }
+  },
+  "desktopName": "combitab.desktop"
+}

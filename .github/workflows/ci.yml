@@ -1,0 +1,43 @@
+# Schnelle Rückmeldung bei jedem Push: Typprüfung, Build, Testsuite und der
+# Selbsttest der Desktop-Fassung. Baut bewusst KEINE Installationspakete —
+# das erledigt release.yml beim Setzen eines Versions-Tags.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build & Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Typprüfung und Produktions-Build
+        run: npm run build
+
+      - name: Testsuite
+        run: npm test
+
+      - name: CA-Referenzvalidierung
+        run: npm run validate
+
+      # Der Selbsttest startet ein echtes Electron-Fenster. Auf dem Runner gibt
+      # es keinen Bildschirm, deshalb über einen virtuellen X-Server.
+      - name: Selbsttest der Desktop-Fassung
+        run: xvfb-run -a npm run smoke
