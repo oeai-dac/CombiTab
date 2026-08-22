@@ -443,6 +443,12 @@ Inzidenzmatrix gewinnt CA-Dimension 1 die wahre Reihenfolge zurück (Spearman
   macOS nicht verlässlich, und ein Versions-Check widerspräche dem Grundsatz,
   dass die Anwendung von sich aus keine Verbindung aufbaut. Neue Fassungen
   werden über die Releases-Seite bezogen.
+- **Das AppImage ist unter Ubuntu 24.04+ umständlicher als das deb.** Es braucht
+  dort nachgerüstetes `libfuse2t64` (Ubuntu liefert nur noch FUSE 3) und wegen
+  der eingeschränkten User-Namespaces gegebenenfalls `--no-sandbox` — ein
+  AppArmor-Profil lässt sich aus einem AppImage heraus nicht installieren. Das
+  deb bringt das Profil mit und ist auf Debian-Abkömmlingen der bessere Weg;
+  beides steht in [docs/INSTALLATION.md](docs/INSTALLATION.md).
 - **Nicht auf allen Zielsystemen selbst gestartet.** Verifiziert sind der Bau
   aller Pakete in der CI sowie der Selbsttest unter Linux — einmal aus dem
   Quelltext und einmal gegen das gepackte AppImage. Die Windows- und

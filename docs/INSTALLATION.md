@@ -138,6 +138,40 @@ Möchten Sie CombiTab im Anwendungsmenü sehen, hilft das Werkzeug
 [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher); es richtet
 den Menüeintrag beim ersten Start selbsttätig ein.
 
+#### Auf Ubuntu 24.04 und neuer: zwei Handgriffe vorab
+
+Ubuntu hat ab 24.04 zwei Dinge geändert, die alle AppImages betreffen — nicht
+nur CombiTab.
+
+**1. Fehlermeldung „dlopen(): error loading libfuse.so.2"**
+
+AppImages benötigen FUSE 2, Ubuntu liefert seit 24.04 nur noch FUSE 3. Entweder
+Sie rüsten die alte Bibliothek nach:
+
+```bash
+sudo apt install libfuse2t64
+```
+
+Oder Sie starten das AppImage ohne sie, indem es sich selbst entpackt:
+
+```bash
+./CombiTab-2.0.0-x86_64.AppImage --appimage-extract-and-run
+```
+
+**2. Fehlermeldung zur Sandbox oder ein Fenster, das nicht erscheint**
+
+Ubuntu schränkt seit 24.04 unprivilegierte User-Namespaces ein. Programme wie
+CombiTab, die auf Chromium aufbauen, brauchen dafür ein AppArmor-Profil — das
+lässt sich aus einem AppImage heraus aber nicht installieren. Behelf:
+
+```bash
+./CombiTab-2.0.0-x86_64.AppImage --no-sandbox
+```
+
+**Beide Punkte entfallen beim `.deb`-Paket.** Es bringt das AppArmor-Profil mit
+und richtet es bei der Installation selbsttätig ein. Auf Ubuntu, Kubuntu und
+Linux Mint ist das `.deb` deshalb der bequemere Weg.
+
 ### Ubuntu 22.04+, Debian 12+, Linux Mint
 
 ```bash
