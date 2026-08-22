@@ -37,10 +37,11 @@ jobs:
           - os: windows-latest
             label: Windows (Installer, portabel)
             command: npm run dist:win
-          # Ein macOS-Runner baut beide Architekturen: electron-builder lädt die
-          # passenden Electron-Binärdateien selbst herunter.
+          # Die macos-latest-Runner laufen selbst auf Apple Silicon, das dmg
+          # entsteht also nativ für arm64. Für Intel-Macs wird bewusst kein
+          # Paket gebaut — dort verweist die Anleitung auf die Web-Fassung.
           - os: macos-latest
-            label: macOS (Intel und Apple Silicon)
+            label: macOS (Apple Silicon)
             command: npm run dist:mac
 
     steps:
@@ -115,8 +116,7 @@ jobs:
             | System | Datei |
             |---|---|
             | Windows | `CombiTab-*-Setup-x64.exe` (Installer) oder `CombiTab-*-portable-x64.exe` (ohne Installation) |
-            | macOS (Apple Silicon) | `CombiTab-*-arm64.dmg` |
-            | macOS (Intel) | `CombiTab-*-x64.dmg` |
+            | macOS (Apple Silicon, M1–M4) | `CombiTab-*-arm64.dmg` |
             | Linux (universell) | `CombiTab-*-x86_64.AppImage` |
             | Debian, Ubuntu, Mint | `combitab_*_amd64.deb` |
             | Fedora, openSUSE, RHEL | `combitab-*.x86_64.rpm` |

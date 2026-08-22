@@ -22,14 +22,15 @@ Abschnitt „Assets" der neuesten Version.
 | **Windows 10 oder 11** | `CombiTab-2.0.0-Setup-x64.exe` |
 | Windows, ohne Installation | `CombiTab-2.0.0-portable-x64.exe` |
 | **macOS** mit Apple-Chip (M1–M4) | `CombiTab-2.0.0-arm64.dmg` |
-| **macOS** mit Intel-Prozessor | `CombiTab-2.0.0-x64.dmg` |
 | **Linux**, beliebige Distribution | `CombiTab-2.0.0-x86_64.AppImage` |
 | Linux: Ubuntu 22.04+, Debian 12+, Mint | `combitab_2.0.0_amd64.deb` |
 | Linux: Fedora, openSUSE, RHEL | `combitab-2.0.0.x86_64.rpm` |
 
 **Welchen Mac habe ich?** Apfel-Menü → „Über diesen Mac". Steht dort „Apple M1",
-„M2", „M3" oder „M4", nehmen Sie die `arm64`-Datei. Steht dort „Intel", nehmen
-Sie die `x64`-Datei.
+„M2", „M3" oder „M4", ist die `arm64`-Datei die richtige. **Für Macs mit
+Intel-Prozessor wird kein Paket ausgeliefert** — nutzen Sie dort die
+Web-Fassung: <https://oeai-dac.github.io/CombiTab/>. Sie rechnet ebenso
+vollständig auf dem eigenen Rechner, es werden keine Daten übertragen.
 
 ---
 
@@ -80,7 +81,7 @@ auf einen USB-Stick legen.
 
 ## macOS
 
-1. Laden Sie die zu Ihrem Mac passende `.dmg`-Datei herunter (siehe Tabelle oben).
+1. Laden Sie `CombiTab-2.0.0-arm64.dmg` herunter (nur Macs mit Apple-Chip, siehe oben).
 2. Doppelklicken Sie die Datei. Es öffnet sich ein Fenster mit dem
    CombiTab-Symbol und dem Ordner „Programme".
 3. Ziehen Sie das CombiTab-Symbol auf den Ordner **Programme**.

@@ -23,7 +23,6 @@ MIT-Lizenz · © Christian Gugl / Österreichisches Archäologisches Institut (�
 |---|---|
 | Windows 10/11 | `CombiTab-*-Setup-x64.exe` — oder `*-portable-x64.exe` ohne Installation |
 | macOS (Apple M1–M4) | `CombiTab-*-arm64.dmg` |
-| macOS (Intel) | `CombiTab-*-x64.dmg` |
 | Linux, universell | `CombiTab-*-x86_64.AppImage` |
 | Ubuntu 22.04+, Debian 12+, Mint | `combitab_*_amd64.deb` |
 | Fedora, openSUSE, RHEL | `combitab-*.x86_64.rpm` |
@@ -449,11 +448,14 @@ Inzidenzmatrix gewinnt CA-Dimension 1 die wahre Reihenfolge zurück (Spearman
   AppArmor-Profil lässt sich aus einem AppImage heraus nicht installieren. Das
   deb bringt das Profil mit und ist auf Debian-Abkömmlingen der bessere Weg;
   beides steht in [docs/INSTALLATION.md](docs/INSTALLATION.md).
-- **Nicht auf allen Zielsystemen selbst gestartet.** Verifiziert sind der Bau
-  aller Pakete in der CI sowie der Selbsttest unter Linux — einmal aus dem
-  Quelltext und einmal gegen das gepackte AppImage. Die Windows- und
-  macOS-Pakete sind gebaut, aber noch nicht auf der jeweiligen Zielhardware
-  gestartet worden; das bleibt vor der Veröffentlichung zu tun.
+- **Windows und macOS sind noch nicht auf Zielhardware erprobt.** Unter Linux
+  sind AppImage und deb auf Kubuntu 24.04 sowie das AppImage auf CachyOS
+  tatsächlich gestartet worden, dazu kommt der Selbsttest gegen Quelltext und
+  gepacktes AppImage. Die Windows- und macOS-Pakete entstehen erst in der CI
+  beim Setzen eines Versions-Tags und sind bis dahin weder gebaut noch
+  ausprobiert; das bleibt vor der Veröffentlichung zu tun.
+- **Für Intel-Macs wird kein Paket ausgeliefert.** Dort ist die Web-Fassung der
+  vorgesehene Weg.
 
 ---
 

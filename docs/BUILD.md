@@ -51,7 +51,7 @@ sicheren Kontext für `CompressionStream` (Teilen-Link).
 npm run dist          # für das aktuelle Betriebssystem
 npm run dist:linux    # AppImage, deb, rpm
 npm run dist:win      # NSIS-Installer, portable .exe
-npm run dist:mac      # dmg für Intel und Apple Silicon
+npm run dist:mac      # dmg für Apple Silicon (arm64); Intel wird nicht ausgeliefert
 ```
 
 Die Ergebnisse liegen in `release/`.
