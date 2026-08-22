@@ -448,12 +448,16 @@ Inzidenzmatrix gewinnt CA-Dimension 1 die wahre Reihenfolge zurück (Spearman
   AppArmor-Profil lässt sich aus einem AppImage heraus nicht installieren. Das
   deb bringt das Profil mit und ist auf Debian-Abkömmlingen der bessere Weg;
   beides steht in [docs/INSTALLATION.md](docs/INSTALLATION.md).
-- **Windows und macOS sind noch nicht auf Zielhardware erprobt.** Unter Linux
-  sind AppImage und deb auf Kubuntu 24.04 sowie das AppImage auf CachyOS
-  tatsächlich gestartet worden, dazu kommt der Selbsttest gegen Quelltext und
-  gepacktes AppImage. Die Windows- und macOS-Pakete entstehen erst in der CI
-  beim Setzen eines Versions-Tags und sind bis dahin weder gebaut noch
-  ausprobiert; das bleibt vor der Veröffentlichung zu tun.
+- **Die Warnmeldungen sind noch nicht von Hand nachvollzogen.** Alle sechs
+  Pakete werden beim Setzen eines Versions-Tags nicht nur gebaut, sondern auch
+  installiert und gestartet — AppImage und deb auf Ubuntu, das rpm in einem
+  Fedora-Container, Installer und portable Fassung auf Windows, das dmg auf
+  Apple Silicon; überall bestehen alle zehn Prüfungen des Selbsttests gegen die
+  installierte Anwendung. Dazu kommt der Praxistest auf Kubuntu 24.04 und
+  CachyOS. Was ein Automat nicht sieht, ist der erste Eindruck eines Menschen:
+  wie SmartScreen und Gatekeeper tatsächlich auftreten, ob die Anleitung deren
+  Wortlaut richtig wiedergibt und wie die Oberfläche bei 125 oder 150 Prozent
+  Skalierung wirkt. Das bleibt vor der Veröffentlichung zu tun.
 - **Für Intel-Macs wird kein Paket ausgeliefert.** Dort ist die Web-Fassung der
   vorgesehene Weg.
 
