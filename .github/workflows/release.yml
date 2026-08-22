@@ -78,6 +78,11 @@ jobs:
 
       # Nur die auslieferbaren Dateien einsammeln — nicht das entpackte
       # Verzeichnis, das electron-builder daneben stehen lässt.
+      #
+      # Die .blockmap-Dateien bleiben bewusst draußen: electron-builder legt sie
+      # für Delta-Downloads beim Auto-Update an, und CombiTab bietet kein
+      # Auto-Update. Am Release hingen sie nur als erklärungsbedürftiger Ballast
+      # neben den Paketen.
       - name: Pakete als Artefakt sichern
         uses: actions/upload-artifact@v4
         with:
@@ -90,7 +95,6 @@ jobs:
             release/*.rpm
             release/*.exe
             release/*.dmg
-            release/*.blockmap
 
   release:
     name: Release-Entwurf anlegen
