@@ -3,7 +3,12 @@
 *Archaeological seriation and combination-table analysis*
 
 **Version:** 2.0.0 · **License:** MIT · **Author:** Christian Gugl, Austrian
-Archaeological Institute (ÖAW)
+Archaeological Institute, Austrian Academy of Sciences (ÖAW)
+
+**Written with:** Anthropic's Claude, in Claude Code. Large parts of the
+application and of this documentation were developed with its assistance. The
+direction of the work, the archaeological and methodological decisions, the
+testing and the responsibility for the result lie with the author.
 
 > Looking for more depth? [**GUIDE.md**](GUIDE.md) is the complete reference,
 > including the mathematics behind the seriation methods, the quality metrics

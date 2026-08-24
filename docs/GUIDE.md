@@ -5,6 +5,11 @@
 **Version:** 2.0.0 · **License:** MIT · **Author:** Christian Gugl, Austrian
 Archaeological Institute, Austrian Academy of Sciences (ÖAW)
 
+**Written with:** Anthropic's Claude, in Claude Code. Large parts of the
+application and of this documentation were developed with its assistance. The
+direction of the work, the archaeological and methodological decisions, the
+testing and the responsibility for the result lie with the author.
+
 > This is the full reference. If you only want to get started, read the
 > [**Quick Start Guide**](QUICKSTART.md) instead — ten minutes, no mathematics.
 > Step-by-step installation instructions for people without a technical

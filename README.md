@@ -12,6 +12,11 @@ renderer for the matrix.
 
 MIT licence · © Christian Gugl / Austrian Archaeological Institute (ÖAW)
 
+Developed with the assistance of Anthropic's Claude, in Claude Code: large parts
+of the application and of its documentation were produced with its help. The
+direction of the work, the archaeological and methodological decisions, the
+testing and the responsibility for the result lie with the author.
+
 ---
 
 ## Download
@@ -261,6 +266,11 @@ Robustheit prüfen → exportieren**. React + TypeScript + Vite im ÖAI-Design, 
 einem selbst geschriebenen WebGL2-Renderer für die Matrix.
 
 MIT-Lizenz · © Christian Gugl / Österreichisches Archäologisches Institut (ÖAW)
+
+Entstanden unter Mitwirkung von Claude (Anthropic) in Claude Code: Große Teile
+der Anwendung und ihrer Dokumentation wurden damit erarbeitet. Die fachliche
+Leitung, die archäologischen und methodischen Entscheidungen, die Erprobung und
+die Verantwortung für das Ergebnis liegen beim Autor.
 
 ---
 
