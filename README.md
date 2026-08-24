@@ -1,5 +1,257 @@
 # CombiTab 2
 
+**English** · [Deutsch ↓](#combitab-2--deutsch)
+
+Combination tables, seriation and correspondence analysis for archaeological
+analysis — as a desktop application for Windows, macOS and Linux, and as a web
+application that runs entirely on your own machine.
+
+The full working cycle: **load → seriate/analyse → annotate → test robustness →
+export**. React + TypeScript + Vite in the ÖAI design, with a hand-written WebGL2
+renderer for the matrix.
+
+MIT licence · © Christian Gugl / Austrian Archaeological Institute (ÖAW)
+
+---
+
+## Download
+
+**Try it without installing:** <https://oeai-dac.github.io/CombiTab/>
+
+**Install:** the finished packages are on the
+[**Releases**](https://github.com/oeai-dac/CombiTab/releases) page.
+
+| Your system | File |
+|---|---|
+| Windows 10/11 | `CombiTab-*-Setup-x64.exe` — or `*-portable-x64.exe`, no installation |
+| macOS (Apple M1–M4) | `CombiTab-*-arm64.dmg` |
+| Linux, any distribution | `CombiTab-*-x86_64.AppImage` |
+| Ubuntu 22.04+, Debian 12+, Mint | `combitab_*_amd64.deb` |
+| Fedora, openSUSE, RHEL | `combitab-*.x86_64.rpm` |
+
+The packages are not digitally signed, so Windows and macOS show a warning on
+first launch. **[docs/INSTALLATION.md](docs/INSTALLATION.md)** walks through it
+step by step — no technical background required.
+
+## Documentation
+
+| Document | What it covers |
+|---|---|
+| [**Quick Start Guide**](docs/QUICKSTART.md) | Getting CombiTab, loading data, the five views, a first analysis. Ten minutes. |
+| [**Complete Guide**](docs/GUIDE.md) | The full reference, including the mathematics behind the seriation methods, quality metrics, correspondence analysis and the bootstrap, plus exact export formats. |
+| [**Installation**](docs/INSTALLATION.md) | Step-by-step installation per platform, security warnings, uninstalling *(German)*. |
+| [**Build**](docs/BUILD.md) | Building packages, release process, code signing *(German)*. |
+
+---
+
+## Principles
+
+- **Everything stays local.** There is no backend. Data is never uploaded; the
+  app is installable and works offline after the first visit. The desktop
+  edition goes further: a content-security policy forbids any outbound
+  connection there, and even the fonts are bundled rather than loaded from a
+  CDN.
+- **No third-party libraries for the domain logic.** SVD, correspondence
+  analysis, PDF generation, internationalisation, colour metrics and icon
+  generation are written in-house. The only runtime dependencies are React and
+  — loaded only if XLSX is actually used — SheetJS.
+- **Limits are named, not glossed over.** Where a budget is missed, where a
+  figure is a target rather than a measured result, and where the tool
+  deliberately does *not* make a claim, the text says so — see "Honest limits".
+
+## Building from source
+
+```bash
+npm ci
+npm run dev        # development server (Vite)
+npm run build      # type-check + production build into dist/
+npm run preview    # view the build locally
+npm test           # the full test suite
+npm run electron   # build and launch inside the desktop shell
+npm run smoke      # self-test of the desktop edition
+npm run dist       # installer packages for the current system
+npm run bench      # performance benchmark
+npm run validate   # the CA reference validation only
+npm run gen-icons  # regenerate icons (PWA + package icon)
+```
+
+Details on packaging, releasing and code signing:
+**[docs/BUILD.md](docs/BUILD.md)**.
+
+A demo dataset is loaded at startup. Load your own files by **drag and drop** or
+via "Load file…": a v1 project (`.json`, migrated automatically), a v2 project
+(`.json`), or a raw table (`.csv`/`.tsv`/`.xlsx`).
+
+---
+
+## Features
+
+### Matrix
+
+- **WebGL2 rendering** of the combination table, driven by the `ProjectV2`
+  model: cell colour = the material-group colour of the column, saturation by
+  frequency.
+- **Zoom** (mouse wheel, around the cursor) and **pan** (dragging the surface),
+  operable by mouse and by touch alike (pointer events).
+- **Hover inspector** and **click selection** of cell / context / type with
+  cross-highlighting.
+- **Drag-reorder:** dragging a row or column label reorders contexts or types by
+  hand. Reordering is **O(1)** — only a small order-lookup texture is re-uploaded,
+  not the cells.
+- **Fixed elements:** pin contexts and types in the Inspector. Pinned elements
+  keep their position; seriation arranges only the free elements into the gaps.
+  Mirrored in `rowMetadata.isFixed` / `columnMetadata.isFixed`.
+- **Undo/redo** via snapshots of order + pinning (Ctrl/⌘+Z, Ctrl/⌘+Shift+Z and
+  Ctrl+Y).
+- **Overview minimap** with a viewport rectangle for fast navigation in large
+  matrices.
+- **Canvas-2D fallback path:** without WebGL2, the same renderer draws through a
+  2D context behind the same interface — with an exactly reproduced colour model
+  (`matrix/cellColor.ts`). `renderer.backend` reports
+  `"webgl2" | "canvas2d" | "none"`.
+
+### Seriation & analysis
+
+- **Three methods:** the centroid method (reciprocal averaging), CA-based
+  seriation and iterative optimisation — with a live quality score
+  (concentration, continuity, anti-Robinson, total).
+- **Correspondence analysis:** exact, SVD-based CA (`analysis/ca.ts`, one-sided
+  Jacobi in `analysis/svd.ts`) with a **biplot** (dim 1 × 2) and a **scree plot**.
+- **Ford diagram:** "battleship curves" — bar width = the type's share of the
+  context's inventory, contexts in the current seriation order.
+- **Bootstrap stability:** multinomial resampling of the type frequencies per
+  context; CA dimension 1 per replicate, aligned to the sign of the reference.
+  **Caterpillar plot** with a 90 % rank interval, median and reference rank;
+  global stability as the mean |Spearman ρ|. 100/200/500 replicates,
+  reproducible via a mulberry32 seed.
+- **Brushing & linking:** one shared selection/hover layer (`link.tsx`) couples
+  matrix, biplot and Ford; the selection survives a tab change.
+
+### Filters & focus
+
+Material-group chips, range filters over rows/columns, "hide empty
+rows/columns", and a **focus mode** on the neighbourhood of the selection. The
+filtered view is consumed identically by every view; reordering, seriation,
+pinning and annotation act on the visible subset and are written back into the
+base project. Active filters are carried into the share link, autosave and
+project export.
+
+### Annotations & metadata
+
+- **Cell annotations** ("Annotate" mode): drag a cell range and set it as a
+  batch — certainty (certain/uncertain/questionable), fragmentation, count
+  range, inventory numbers, notes. Annotated cells carry a traffic-light marker.
+  When applying to a mixed selection, **only fields actually touched** are set;
+  inconsistent fields are left intact. Explicitly clearing a field still deletes
+  it.
+- **"Not recorded" vs. structural absence:** a cell can be marked as a missing
+  value, cleanly separated from a true 0. The matrix draws such cells with a
+  diagonal cross; the Inspector shows a presence statistic (present / absent /
+  not recorded). Import recognises `?`, `NA` and `N/A`; export writes `?` back.
+- **Metadata tab:** material-group management (see above) and a searchable type
+  table for assigning groups and marking lead types.
+
+### Colour metrics & accessibility
+
+- **CVD-safe palette** at the press of a button (Okabe-Ito), previews under
+  deuteranopia/protanopia/tritanopia and a warning about barely distinguishable
+  colour pairs (perceptual distance ΔE below threshold). Colour core
+  `core/palette.ts`: WCAG contrast, dichromacy simulation (Viénot 1999, correctly
+  in linear light), CIELAB ΔE76.
+- **Keyboard & screen reader:** skip link, `:focus-visible` focus ring, tabs
+  following the WAI-ARIA tabs pattern (roving `tabindex`, arrow keys/Home/End),
+  landmarks, `role="img"` with a descriptive label on the matrix canvas,
+  `role="alert"` for errors, `<html lang>` following the UI language.
+- **`prefers-reduced-motion`** disables non-essential transitions.
+
+### Export
+
+Via the export menu in the header, reachable from every tab:
+
+- **Matrix image** in the current display order: **SVG** and **PDF** (true
+  vector, no third-party library — PDF written directly as a content stream with
+  base-14 Helvetica) as well as **PNG** (rasterised ×2). Pinned elements are
+  labelled in red, material groups appear as a legend.
+- **Sorted data:** CSV and XLSX in seriation order.
+- **Project file:** v2 (canonical schema, `.combitab.json`) and, via the
+  migration adapter, v1 (backward-compatible).
+- **Methods report** as Markdown, **bilingual**, with dataset figures, method,
+  quality metrics, CA inertia, bootstrap stability and citation.
+- **Linked Open Data** as Turtle and JSON-LD (see below).
+
+Hardened cross-browser: CSV with a UTF-8 BOM for Excel on Windows, SVG with XML
+prolog and namespace, PDF with `/MediaBox`, transliterated portable filenames,
+and a `window.open` fallback for browsers without `<a download>`.
+
+### Linked Open Data (CIDOC-CRM / CRMarchaeo)
+
+- Contexts are modelled as `crmarchaeo:A2_Stratigraphic_Volume_Unit` (not as
+  sites); the **single** `crm:E27_Site` is the findspot. Each context gets a
+  `crmarchaeo:A1_Excavation_Processing_Unit` with
+  `crmarchaeo:AP5_removed_part_or_all_of`.
+- **Real object identities:** a cell with frequency n produces n individual
+  `crm:E22_Human-Made_Object`, located in the context via
+  `crmarchaeo:AP21_contains`. A documented limit (`maxObjectsPerCell`, default
+  1000) falls back explicitly to an aggregate above that; `objectIdentities:
+  false` forces the aggregate.
+- **A shared intermediate representation:** Turtle and JSON-LD are rendered from
+  *one* IR graph and are guaranteed to carry the same statements.
+- "Not recorded" **and** structural absence deliberately produce **no** find.
+
+### Sharing, autosave, offline
+
+- **Share link:** the complete state (project, order, filters, annotations,
+  missing-value marks, active tab) is encoded into the **URL fragment** via the
+  native `CompressionStream` and base64url — the fragment never goes to a
+  server. Above ~16 000 characters, a notice suggests sharing the project file
+  instead.
+- **Autosave in IndexedDB** when the page is hidden or closed; on the next start
+  a banner offers to restore. Every access is fault-tolerant (private mode →
+  silently disabled).
+- **PWA:** manifest, service worker (app shell cached on install, navigations
+  network-first with an offline fallback, other requests
+  stale-while-revalidate), install button. Icons are generated dependency-free
+  via Node's `zlib`.
+
+### Bilingual
+
+The entire visible interface exists in German and English, including the canvas
+labels. Switch with the DE/EN button; the choice is remembered and pre-set from
+the browser language at startup. An in-house i18n core (`src/i18n/`) with a flat
+dictionary, `{var}` interpolation and an EN → DE → key fallback.
+
+---
+
+## Desktop edition
+
+The same application, packaged in an Electron shell — so that users need
+neither Node.js, nor a terminal, nor a package manager.
+
+- **It loads through its own `app://` scheme, not `file://`.** That is not a
+  detail: the compute workers are **module workers**
+  (`new Worker(url, { type: "module" })`), and Chromium refuses to load those
+  over `file://` — correspondence analysis, bootstrap and score computation
+  would have failed silently. The custom scheme also supplies a stable origin,
+  and with it reliable IndexedDB (autosave), localStorage (theme, language) and
+  a secure context for `CompressionStream` (share links).
+- **Locked down.** `contextIsolation`, `sandbox`, no `nodeIntegration`. The
+  preload script passes through **no** file or Node function, only an identifier
+  by which the interface recognises the shell. A content-security policy forbids
+  every outbound connection.
+- **Exports land where you want them:** in the shell, the app's `<a download>`
+  path opens a native save dialog instead of silently writing to the downloads
+  folder.
+- **A self-test instead of an assumption.** `npm run smoke` starts an invisible
+  window and checks the ten properties that can break when an app moves into a
+  shell — module workers, WebGL2, secure context, loaded fonts, no external
+  resources. It runs in CI and has also been run against the finished AppImage.
+
+---
+
+# CombiTab 2 — Deutsch
+
+[English ↑](#combitab-2)
+
 Kombinationstabellen, Seriation und Korrespondenzanalyse für die archäologische
 Auswertung — als Desktop-Anwendung für Windows, macOS und Linux und als
 Web-Anwendung, die vollständig auf dem eigenen Rechner läuft.
@@ -30,6 +282,15 @@ MIT-Lizenz · © Christian Gugl / Österreichisches Archäologisches Institut (�
 Die Pakete sind nicht digital signiert; Windows und macOS zeigen deshalb beim
 ersten Start eine Warnung. **[docs/INSTALLATION.md](docs/INSTALLATION.md)**
 führt Schritt für Schritt hindurch — auch ohne technische Vorkenntnisse.
+
+## Dokumentation
+
+| Dokument | Inhalt |
+|---|---|
+| [**Quick Start Guide**](docs/QUICKSTART.md) | CombiTab beziehen, Daten laden, die fünf Ansichten, eine erste Auswertung. Zehn Minuten *(englisch)*. |
+| [**Complete Guide**](docs/GUIDE.md) | Das vollständige Nachschlagewerk, samt der Mathematik hinter Seriationsverfahren, Qualitätsmetriken, Korrespondenzanalyse und Bootstrap sowie den exakten Exportformaten *(englisch)*. |
+| [**Installation**](docs/INSTALLATION.md) | Installation Schritt für Schritt je System, Sicherheitswarnungen, Deinstallation. |
+| [**Build**](docs/BUILD.md) | Paketbau, Freigabe, Code-Signierung. |
 
 ---
 
