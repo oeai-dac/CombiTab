@@ -233,7 +233,3 @@ Nutzer ohne Node.js, Terminal oder Paketverwaltung auskommen.
   externen Ressourcen. Er läuft in der CI mit und wurde auch gegen das fertig
   gepackte AppImage ausgeführt.
 
----
-
-## Architektur
-
