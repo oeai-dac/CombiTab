@@ -73,38 +73,6 @@ Rohtabelle (`.csv`/`.tsv`/`.xlsx`).
 
 ---
 
-## Neu in Version 2.0
-
-- **Materialgruppen sind frei verwaltbar.** Im Reiter *Metadaten &
-  Materialzuweisung* lassen sich Gruppen **anlegen, umbenennen, umfärben und
-  löschen**. Neue Gruppen erscheinen unmittelbar in der Zuweisungsliste, in der
-  Matrix-Legende, in allen Bild-Exporten und als Filter-Chip in der Matrix-Ansicht.
-  Beim Löschen wandern die zugewiesenen Typen in die erste verbleibende Gruppe und
-  übernehmen deren Farbe — es entsteht keine verwaiste Zuweisung; die letzte
-  verbleibende Gruppe ist nicht löschbar, damit jeder Typ stets eine gültige Farbe
-  hat. Die Farbe einer neuen Gruppe wird nicht zyklisch vergeben, sondern als jene
-  Palettenfarbe gewählt, die von allen bereits vergebenen perzeptuell am weitesten
-  entfernt ist.
-- **Bild-Export korrigiert.** Zwei Layoutfehler der Vorgängerfassung sind behoben:
-  - Die gedrehten Spaltenbeschriftungen liefen wegen einer gegenüber dem
-    Textanker invertierten Drehrichtung **in die Matrix hinein**. Sie stehen jetzt
-    in dem für sie reservierten Rand über der Matrix und lesen von unten nach oben.
-  - Die **Legende ging nicht in die Breite der Zeichenfläche ein**, sodass die
-    letzten Materialgruppen rechts abgeschnitten wurden. Sie bricht jetzt um, und
-    die Zeichenfläche wächst mit.
-
-  Zusätzlich rechnet das Layout jetzt mit **echten Helvetica-Textbreiten** statt
-  mit einer pauschalen Zeichenbreite — also mit der Metrik der Schrift, die der
-  PDF-Export tatsächlich setzt. Überlange Bezeichnungen werden sichtbar gekürzt,
-  statt den Rand zu sprengen. SVG, PNG und PDF stammen weiterhin aus **einer**
-  gemeinsamen Szene und sind dadurch deckungsgleich.
-- **Neue Testsuiten:** `core/materialGroups.test.ts` (Gruppenverwaltung, inklusive
-  der Invariante „jeder Typ zeigt auf eine existierende Gruppe und trägt deren
-  Farbe") und `export/layout.test.ts` (Export-Geometrie: kein Text ragt über die
-  Zeichenfläche hinaus, kein Text überlappt eine gefüllte Fläche).
-
----
-
 ## Funktionsumfang
 
 ### Matrix
