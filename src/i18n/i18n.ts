@@ -206,6 +206,7 @@ const de: Dict = {
   "ford.title": "Ford-Diagramm",
   "ford.hint": "„Battleship curves“ — Balkenbreite = Anteil des Typs am Inventar des Kontexts, Kontexte in Seriationsreihenfolge",
   "ford.axisTitle": "Kontexte (Seriationsreihenfolge) ▾",
+  "ford.summary": "{ty} Typen · {c} Kontexte",
 
   // Stabilität
   "stability.run": "Bootstrap ausführen",
@@ -485,6 +486,7 @@ const en: Dict = {
   "ford.title": "Ford diagram",
   "ford.hint": "“Battleship curves” — bar width = share of the type in the context's inventory, contexts in seriation order",
   "ford.axisTitle": "Contexts (seriation order) ▾",
+  "ford.summary": "{ty} types · {c} contexts",
 
   "stability.run": "Run bootstrap",
   "stability.cancel": "Cancel",

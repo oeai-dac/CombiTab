@@ -98,7 +98,7 @@ export function FordView({ project }: { project: ProjectV2 }) {
       <div className="sec-hdr">
         <h2>{t("ford.title")}</h2>
         <span className="hint">{t("ford.hint")}</span>
-        <span className="badge">{model.colSeq.length} Typen · {model.rowSeq.length} Kontexte</span>
+        <span className="badge">{t("ford.summary", { ty: model.colSeq.length, c: model.rowSeq.length })}</span>
       </div>
       <div className="mx-wrap" ref={wrap} style={{ flex: 1, marginBottom: "1rem" }}><canvas ref={ref} style={{ position: "absolute", inset: 0 }} /></div>
     </>

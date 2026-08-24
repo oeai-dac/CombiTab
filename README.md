@@ -57,7 +57,7 @@ step by step — no technical background required.
   — loaded only if XLSX is actually used — SheetJS.
 - **Limits are named, not glossed over.** Where a budget is missed, where a
   figure is a target rather than a measured result, and where the tool
-  deliberately does *not* make a claim, the text says so — see "Honest limits".
+  deliberately does *not* make a claim, the text says so.
 
 ## Building from source
 
@@ -307,7 +307,7 @@ führt Schritt für Schritt hindurch — auch ohne technische Vorkenntnisse.
   tatsächlicher XLSX-Nutzung nachgeladen — SheetJS.
 - **Grenzen werden benannt, nicht kaschiert.** Wo ein Budget verfehlt wird, wo
   eine Zahl ein Ziel und kein gemessenes Ergebnis ist, und wo das Werkzeug etwas
-  bewusst *nicht* behauptet, steht das im Text — siehe „Ehrliche Grenzen".
+  bewusst *nicht* behauptet, steht das im Text.
 
 ## Aus dem Quelltext bauen
 
